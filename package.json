@@ -7,7 +7,8 @@
     "start": "NODE_ENV=development node build",
     "dev": "NODE_ENV=development babel-node src",
     "build": "rm -rf dist && mkdir dist && babel src -D -d build",
-    "migrate": "sequelize-cli db:migrate",
+    "migrate": "sequelize-cli db:migrate --debug",
+    "unmigrate": "sequelize-cli db:migrate:undo",
     "heroku-postbuild": "npm run build && npm run migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

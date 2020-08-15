@@ -2,25 +2,25 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     const createPhoneNumbersTable = () => queryInterface.createTable('PhoneNumbers', {
       id: {
-        type: DataTypes.STRING(45),
+        type: Sequelize.STRING(45),
         allowNull: false,
         primaryKey: true,
       },
       name: {
-        type: DataTypes.STRING(500),
+        type: Sequelize.STRING(500),
         allowNull: true,
       },
       phoneNumberType: {
-        type: DataTypes.STRING(500),
+        type: Sequelize.STRING(500),
         allowNull: false,
         default: 'work',
       },
       phoneNumber: {
-        type: DataTypes.STRING(50),
+        type: Sequelize.STRING(50),
         allowNull: false,
       },
       verified: {
-        type: DataTypes.BOOLEAN,
+        type: Sequelize.BOOLEAN,
         allowNull: false,
         default: false,
       },
@@ -34,10 +34,10 @@ module.exports = {
         allowNull: true,
       },
       deleted: {
-        type: DataTypes.BOOLEAN,
+        type: Sequelize.BOOLEAN,
         allowNull: false,
         default: false,
-      }
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
