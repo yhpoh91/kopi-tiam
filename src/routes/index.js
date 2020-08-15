@@ -2,13 +2,13 @@ import express from 'express';
 
 import authRouter from './auth';
 import userRouter from './user';
-import profileRouter from './profile';
+import sampleRouter from './sample';
 
 const router = express.Router();
 
-router.get('/', (_, res) => res.send('meow1123'));
+router.get('/', (_, res) => res.send('root router'));
 router.use('/auth', authRouter);
 router.use('/user', userRouter);
-router.use('/profile', profileRouter);
+router.use('/sample', sampleRouter);
 
 export default router;
