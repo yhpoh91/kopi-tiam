@@ -7,6 +7,8 @@
     "start": "NODE_ENV=development node build",
     "dev": "NODE_ENV=development babel-node src",
     "build": "rm -rf dist && mkdir dist && babel src -D -d build",
+    "migrate": "sequelize-cli db:migrate",
+    "heroku-postbuild": "npm run build && npm run migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -45,6 +47,9 @@
     "kopi-id": "^1.0.2",
     "log4js": "^6.3.0",
     "moment": "^2.24.0",
+    "pg": "^7.12.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.19.2",
     "uuid": "^8.1.0"
   },
   "devDependencies": {
@@ -60,6 +65,7 @@
     "eslint-plugin-import": "^2.20.2",
     "esm": "^3.2.25",
     "mocha": "^7.2.0",
-    "regenerator-runtime": "^0.13.5"
+    "regenerator-runtime": "^0.13.5",
+    "sequelize-cli": "^5.5.1"
   }
 }

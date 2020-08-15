@@ -6,6 +6,8 @@ import helmet from 'helmet';
 
 import KopiId from 'kopi-id';
 import config from './config';
+import router from './routes';
+import errorHandler from './services/errorHandler';
 
 const environment = process.env.NODE_ENV || 'development';
 const listenIp = '0.0.0.0';
@@ -26,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/', express.static('public'));
+app.use('/api', router);
 app.get('/sinkhole', (req, res) => res.json(req.query));
 
 // KopiID Routes
@@ -43,6 +46,8 @@ app.post('/consent', (req, res) => {
   const { authorizationRequestId, isConsentGivenAllow } = req.body;
   kopiId.handleAuthorized(res, authorizationRequestId, isConsentGivenAllow, false);
 });
+
+app.use(errorHandler.handleError);
 
 // Server
 const httpServer = http.createServer(app);
