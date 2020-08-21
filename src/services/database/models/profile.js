@@ -68,11 +68,11 @@ module.exports = (sequelize, DataTypes) => {
 
   Profile.associate = (models) => {
     // associations can be defined here
-    Profile.hasMany(models.LocalUser, { foreignKey: 'profileId' });
+    Profile.hasMany(models.LocalUser, { foreignKey: 'profileId', as: 'localUsers' });
 
-    Profile.hasMany(models.Email, { foreignKey: 'profileId' });
-    Profile.hasMany(models.PhoneNumber, { foreignKey: 'profileId' });
-    Profile.hasMany(models.Address, { foreignKey: 'profileId' });
+    Profile.hasMany(models.Email, { foreignKey: 'profileId', as: 'emails' });
+    Profile.hasMany(models.PhoneNumber, { foreignKey: 'profileId', as: 'phoneNumbers' });
+    Profile.hasMany(models.Address, { foreignKey: 'profileId', as: 'addresses' });
   };
 
   return Profile;

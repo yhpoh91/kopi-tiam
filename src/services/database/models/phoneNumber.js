@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 
   PhoneNumber.associate = (models) => {
     // associations can be defined here
-    PhoneNumber.belongsTo(models.Profile, { foreignKey: 'profileId' });
+    PhoneNumber.belongsTo(models.Profile, { foreignKey: 'profileId', as: 'profile' });
   };
 
   return PhoneNumber;

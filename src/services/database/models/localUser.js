@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
 
   LocalUser.associate = (models) => {
     // associations can be defined here
-    LocalUser.belongsTo(models.Profile, { foreignKey: 'profileId' });
+    LocalUser.belongsTo(models.Profile, { foreignKey: 'profileId', as: 'profile' });
   };
 
   return LocalUser;

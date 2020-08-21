@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Email.associate = (models) => {
     // associations can be defined here
-    Email.belongsTo(models.Profile, { foreignKey: 'profileId' });
+    Email.belongsTo(models.Profile, { foreignKey: 'profileId', as: 'profile' });
   };
 
   return Email;
