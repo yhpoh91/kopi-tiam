@@ -27,26 +27,16 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/', express.static('public'));
-app.use('/api', router);
+app.use((req, _, next) => {
+  req.kopiId = kopiId;
+  next();
+});
+
 app.get('/sinkhole', (req, res) => res.json(req.query));
 
-// KopiID Routes
+app.use('/', express.static('public'));
+app.use('/api', router);
 app.use('/oidc', kopiId.express);
-
-// Login API Route
-app.post('/login', (req, res) => {
-  const { username, password, authenticationRequestId } = req.body;
-  const isUserAuthenticated = (username === 'user' && password === 'pass');
-  kopiId.handleAuthenticated(res, authenticationRequestId, 'uid', isUserAuthenticated, false);
-});
-
-// Consent API Route
-app.post('/consent', (req, res) => {
-  const { authorizationRequestId, isConsentGivenAllow } = req.body;
-  kopiId.handleAuthorized(res, authorizationRequestId, isConsentGivenAllow, false);
-});
-
 app.use(errorHandler.handleError);
 
 // Server

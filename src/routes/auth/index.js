@@ -15,6 +15,12 @@ router.route('/login')
     controller.login,
   );
 
+router.route('/consent')
+  .post(
+    validate(validator.consent),
+    controller.consent,
+  );
+
 router.route('/register')
   .post(
     validate(validator.register),

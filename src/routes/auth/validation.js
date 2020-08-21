@@ -7,6 +7,16 @@ export default {
     body: {
       username: Joi.string().min(1).required(),
       password: Joi.string().min(1).required(),
+      authenticationRequestId: Joi.string().min(1).required(),
+    },
+  },
+
+  consent: {
+    query: {},
+    params: {},
+    body: {
+      authorizationRequestId: Joi.string().min(1).required(),
+      isConsentGivenAllow: Joi.string().required().default(false),
     },
   },
 
