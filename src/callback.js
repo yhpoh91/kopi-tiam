@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { v4 as uuid } from 'uuid';
 
 import databaseService from './services/database';
-import { profile } from 'console';
+import authenticationRequestService from './services/authenticationRequest';
 
 
 const AUTHORIZATION_CODE_LENGTH = 256;
@@ -237,13 +237,13 @@ const onSetConsentGiven = async (sub, scope, clientId) => {
 };
 
 const onSaveAuthenticationRequest = async (authenticationRequest) => {
-  const authenticationRequestId = uuid();
-  authenticationRequests[authenticationRequestId] = authenticationRequest;
+  const authenticationRequestId = await authenticationRequestService.saveAuthenticationRequest(authenticationRequest);
   return Promise.resolve(authenticationRequestId);
 };
 
 const onLoadAuthenticationRequest = async (authenticationRequestId) => {
-  return Promise.resolve(authenticationRequests[authenticationRequestId]);
+  const authenticationRequest = await authenticationRequestService.loadAuthenticationRequest(authenticationRequestId);
+  return Promise.resolve(authenticationRequest);
 };
 
 const onSaveAuthorizationRequest = async (authenticationRequestId, sub) => {
