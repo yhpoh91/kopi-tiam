@@ -1,6 +1,6 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const createAuthenticationRequestAcrLocaleTable = () => queryInterface.createTable('AuthenticationRequestAcrLocales', {
+    const createAuthenticationRequestAcrValueTable = () => queryInterface.createTable('AuthenticationRequestAcrValues', {
       id: {
         type: Sequelize.STRING(45),
         allowNull: false,
@@ -34,11 +34,11 @@ module.exports = {
     });
 
     return Promise.resolve()
-      .then(createAuthenticationRequestAcrLocaleTable);
+      .then(createAuthenticationRequestAcrValueTable);
   },
   down: (queryInterface) => {
-    const dropAuthenticationRequestAcrLocaleTable = () => queryInterface.dropTable('AuthenticationRequestAcrLocales');
+    const dropAuthenticationRequestAcrValueTable = () => queryInterface.dropTable('AuthenticationRequestAcrValues');
     return Promise.resolve()
-      .then(dropAuthenticationRequestAcrLocaleTable);
+      .then(dropAuthenticationRequestAcrValueTable);
   },
 };

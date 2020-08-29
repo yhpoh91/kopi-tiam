@@ -2,12 +2,93 @@ import { v4 as uuid } from 'uuid';
 
 import databaseService from './database';
 
+
+const mapAuthenticationRequestAcrValues = (authenticationRequest) => {
+  if (authenticationRequest.acrValues == null) {
+    return null;
+  }
+
+  return authenticationRequest.acrValues.map(acrValue => acrValue.dataValues);
+};
+
+const mapAuthenticationRequestClaimsLocales = (authenticationRequest) => {
+  if (authenticationRequest.claimsLocales == null) {
+    return null;
+  }
+
+  return authenticationRequest.claimsLocales.map(claimsLocale => claimsLocale.dataValues);
+};
+
+const mapAuthenticationRequestPrompts = (authenticationRequest) => {
+  if (authenticationRequest.prompts == null) {
+    return null;
+  }
+
+  return authenticationRequest.prompts.map(prompt => prompt.dataValues);
+};
+
+const mapAuthenticationRequestResponseTypes = (authenticationRequest) => {
+  if (authenticationRequest.responseTypes == null) {
+    return null;
+  }
+
+  return authenticationRequest.responseTypes.map(responseType => responseType.dataValues);
+};
+
+const mapAuthenticationRequestScopes = (authenticationRequest) => {
+  if (authenticationRequest.scopes == null) {
+    return null;
+  }
+
+  return authenticationRequest.scopes.map(scope => scope.dataValues);
+};
+
+const mapAuthenticationRequestUiLocales = (authenticationRequest) => {
+  if (authenticationRequest.uiLocales == null) {
+    return null;
+  }
+
+  return authenticationRequest.uiLocales.map(uiLocale => uiLocale.dataValues);
+};
+
+const mapAuthenticationRequest = (authenticationRequest) => {
+  const loadedAuthenticationRequest = authenticationRequest.dataValues;
+  loadedAuthenticationRequest.acrValues = mapAuthenticationRequestAcrValues(authenticationRequest);
+  loadedAuthenticationRequest.claimsLocales = mapAuthenticationRequestClaimsLocales(authenticationRequest);
+  loadedAuthenticationRequest.prompts = mapAuthenticationRequestPrompts(authenticationRequest);
+  loadedAuthenticationRequest.responseTypes = mapAuthenticationRequestResponseTypes(authenticationRequest);
+  loadedAuthenticationRequest.scopes = mapAuthenticationRequestScopes(authenticationRequest);
+  loadedAuthenticationRequest.uiLocales = mapAuthenticationRequestUiLocales(authenticationRequest);
+
+  const mappedAuthenticationRequest = {
+    id: loadedAuthenticationRequest.id,
+    client_id: loadedAuthenticationRequest.clientId,
+    redirect_uri: loadedAuthenticationRequest.redirectUri,
+    state: loadedAuthenticationRequest.state,
+    response_mode: loadedAuthenticationRequest.responseMode,
+    nonce: loadedAuthenticationRequest.nonce,
+    display: loadedAuthenticationRequest.display,
+    max_age: loadedAuthenticationRequest.maxAge,
+    id_token_hint: loadedAuthenticationRequest.idTokenHint,
+    login_hint: loadedAuthenticationRequest.loginHint,
+    auth_time: loadedAuthenticationRequest.authTime,
+    acr_value: loadedAuthenticationRequest.acrValues,
+    claims_locale: loadedAuthenticationRequest.claimsLocales,
+    prompt: loadedAuthenticationRequest.prompts,
+    response_type: loadedAuthenticationRequest.responseTypes,
+    scope: loadedAuthenticationRequest.scopes,
+    ui_locale: loadedAuthenticationRequest.uiLocales,
+  };
+
+  return mappedAuthenticationRequest;
+};
+
 const saveAcrValues = async (authenticationRequest, authenticationRequestId) => {
   try {
     const { AuthenticationRequestAcrValue } = databaseService;
     const id = uuid();
 
-    const { acr_values: acrValues } = authenticationRequest;
+    const { acr_values: acrValues = [] } = authenticationRequest;
     const savableAcrValues = acrValues.map((acrValue, index) => ({
       id: uuid(),
       authenticationRequestId,
@@ -30,7 +111,7 @@ const saveClaimsLocales = async (authenticationRequest, authenticationRequestId)
     const { AuthenticationRequestClaimsLocale } = databaseService;
     const id = uuid();
 
-    const { claims_locales: claimsLocales } = authenticationRequest;
+    const { claims_locales: claimsLocales = [] } = authenticationRequest;
     const savableClaimsLocales = claimsLocales.map((claimsLocale, index) => ({
       id: uuid(),
       authenticationRequestId,
@@ -53,7 +134,7 @@ const savePrompts = async (authenticationRequest, authenticationRequestId) => {
     const { AuthenticationRequestPrompt } = databaseService;
     const id = uuid();
 
-    const { prompt: prompts } = authenticationRequest;
+    const { prompt: prompts = [] } = authenticationRequest;
     const savablePrompts = prompts.map((prompt, index) => ({
       id: uuid(),
       authenticationRequestId,
@@ -76,7 +157,7 @@ const saveResponseTypes = async (authenticationRequest, authenticationRequestId)
     const { AuthenticationRequestResponseType } = databaseService;
     const id = uuid();
 
-    const { response_type: responseTypes } = authenticationRequest;
+    const { response_type: responseTypes = [] } = authenticationRequest;
     const savableResponseTypes = responseTypes.map((responseType, index) => ({
       id: uuid(),
       authenticationRequestId,
@@ -99,7 +180,7 @@ const saveScopes = async (authenticationRequest, authenticationRequestId) => {
     const { AuthenticationRequestScope } = databaseService;
     const id = uuid();
 
-    const { scope: scopes } = authenticationRequest;
+    const { scope: scopes = [] } = authenticationRequest;
     const savableScopes = scopes.map((scope, index) => ({
       id: uuid(),
       authenticationRequestId,
@@ -122,7 +203,7 @@ const saveUiLocales = async (authenticationRequest, authenticationRequestId) => 
     const { AuthenticationRequestUiLocale } = databaseService;
     const id = uuid();
 
-    const { ui_locales: uiLocales } = authenticationRequest;
+    const { ui_locales: uiLocales = [] } = authenticationRequest;
     const savableUiLocales = uiLocales.map((uiLocale, index) => ({
       id: uuid(),
       authenticationRequestId,
@@ -160,13 +241,13 @@ const saveAuthenticationRequest = async (authenticationRequest) => {
       deleted: false,
     };
   
+    await AuthenticationRequest.create(savableAuthenticationRequest);
     await saveAcrValues(authenticationRequest, authenticationRequestId);
     await saveClaimsLocales(authenticationRequest, authenticationRequestId);
     await savePrompts(authenticationRequest, authenticationRequestId);
     await saveResponseTypes(authenticationRequest, authenticationRequestId);
     await saveScopes(authenticationRequest, authenticationRequestId);
     await saveUiLocales(authenticationRequest, authenticationRequestId);
-    await AuthenticationRequest.create();
     return Promise.resolve(authenticationRequestId);
   } catch (error) {
     return Promise.reject(error);
@@ -184,8 +265,54 @@ const loadAuthenticationRequest = async (authenticationRequestId) => {
       AuthenticationRequestScope,
       AuthenticationRequestUiLocale,
     } = databaseService;
+
+    const query = {
+      where: {
+        id: authenticationRequestId,
+        deleted: false,
+      },
+      include: [
+        {
+          model: AuthenticationRequestAcrValue,
+          as: 'acrValues',
+          foreignKey: 'authenticationRequestId'
+        },
+        {
+          model: AuthenticationRequestClaimsLocale,
+          as: 'claimsLocales',
+          foreignKey: 'authenticationRequestId'
+        },
+        {
+          model: AuthenticationRequestPrompt,
+          as: 'prompts',
+          foreignKey: 'authenticationRequestId'
+        },
+        {
+          model: AuthenticationRequestResponseType,
+          as: 'responseTypes',
+          foreignKey: 'authenticationRequestId'
+        },
+        {
+          model: AuthenticationRequestScope,
+          as: 'scopes',
+          foreignKey: 'authenticationRequestId'
+        },
+        {
+          model: AuthenticationRequestUiLocale,
+          as: 'uiLocales',
+          foreignKey: 'authenticationRequestId'
+        }
+      ]
+    };
+
+    const authenticationRequest = await AuthenticationRequest.findOne(query);
+    if (authenticationRequest == null) {
+      return Promise.resolve(null);
+    }
+
+    const mappedAuthenticationRequest = mapAuthenticationRequest(authenticationRequest);
   
-    return Promise.resolve(authenticationRequests[authenticationRequestId]);
+    return Promise.resolve(mappedAuthenticationRequest);
   } catch (error) {
     return Promise.reject(error);
   }

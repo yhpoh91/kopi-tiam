@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const AuthenticationRequestAcrLocale = sequelize.define('AuthenticationRequestAcrLocale', {
+  const AuthenticationRequestAcrValue = sequelize.define('AuthenticationRequestAcrValue', {
     id: {
       type: DataTypes.STRING(45),
       allowNull: false,
@@ -26,10 +26,10 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
   });
 
-  AuthenticationRequestAcrLocale.associate = (models) => {
+  AuthenticationRequestAcrValue.associate = (models) => {
     // associations can be defined here
-    AuthenticationRequestAcrLocale.belongsTo(models.AuthenticationRequest, { foreignKey: 'authenticationRequestId', as: 'authenticationRequest' });
+    AuthenticationRequestAcrValue.belongsTo(models.AuthenticationRequest, { foreignKey: 'authenticationRequestId', as: 'authenticationRequest' });
   };
 
-  return AuthenticationRequestAcrLocale;
+  return AuthenticationRequestAcrValue;
 };

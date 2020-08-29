@@ -1,8 +1,8 @@
 module.exports = {
   up: (queryInterface) => {
-    const addForeignKeyToAcrLocale = () => queryInterface.addConstraint('AuthenticationRequestAcrLocales', ['authenticationRequestId'], {
+    const addForeignKeyToAcrValue = () => queryInterface.addConstraint('AuthenticationRequestAcrValues', ['authenticationRequestId'], {
       type: 'foreign key',
-      name: 'fk_aracrlocale_authenticationrequestid',
+      name: 'fk_aracrvalue_authenticationrequestid',
       references: {
         table: 'AuthenticationRequests',
         field: 'id',
@@ -73,7 +73,7 @@ module.exports = {
     });
 
     return Promise.resolve()
-      .then(addForeignKeyToAcrLocale)
+      .then(addForeignKeyToAcrValue)
       .then(addForeignKeyToClaimsLocale)
       .then(addForeignKeyToPrompt)
       .then(addForeignKeyToResponseType)
@@ -83,18 +83,18 @@ module.exports = {
       .then(addForeignKeyToAuthorization);
   },
   down: (queryInterface) => {
-    const removeForeignKeyFromAcrLocale = () => queryInterface.removeConstraint('AuthenticationRequestAcrLocales', 'fk_aracrlocale_authenticationrequestid');
-    const removeForeignKeyFromClaimsLocale = () => queryInterface.removeConstraint('AuthenticationRequestAcrLocales', 'fk_arclaimslocale_authenticationrequestid');
-    const removeForeignKeyFromPrompt = () => queryInterface.removeConstraint('AuthenticationRequestAcrLocales', 'fk_arprompt_authenticationrequestid');
-    const removeForeignKeyFromResponseType = () => queryInterface.removeConstraint('AuthenticationRequestAcrLocales', 'fk_arresponsetype_authenticationrequestid');
-    const removeForeignKeyFromScope = () => queryInterface.removeConstraint('AuthenticationRequestAcrLocales', 'fk_arscope_authenticationrequestid');
-    const removeForeignKeyFromUiLocale = () => queryInterface.removeConstraint('AuthenticationRequestAcrLocales', 'fk_aruilocale_authenticationrequestid');
+    const removeForeignKeyFromAcrValue = () => queryInterface.removeConstraint('AuthenticationRequestAcrValues', 'fk_aracrvalue_authenticationrequestid');
+    const removeForeignKeyFromClaimsLocale = () => queryInterface.removeConstraint('AuthenticationRequestClaimsLocales', 'fk_arclaimslocale_authenticationrequestid');
+    const removeForeignKeyFromPrompt = () => queryInterface.removeConstraint('AuthenticationRequestPrompts', 'fk_arprompt_authenticationrequestid');
+    const removeForeignKeyFromResponseType = () => queryInterface.removeConstraint('AuthenticationRequestResponseTypes', 'fk_arresponsetype_authenticationrequestid');
+    const removeForeignKeyFromScope = () => queryInterface.removeConstraint('AuthenticationRequestScopes', 'fk_arscope_authenticationrequestid');
+    const removeForeignKeyFromUiLocale = () => queryInterface.removeConstraint('AuthenticationRequestUiLocales', 'fk_aruilocale_authenticationrequestid');
     
     const removeForeignKeyFromAuthorizationRequest = () => queryInterface.removeConstraint('AuthorizationRequests', 'fk_authorizationrequest_authenticationrequestid');
     const removeForeignKeyFromAuthorization = () => queryInterface.removeConstraint('Authorizations', 'fk_authorization_authorizationrequestId');
 
     return Promise.resolve()
-      .then(removeForeignKeyFromAcrLocale)
+      .then(removeForeignKeyFromAcrValue)
       .then(removeForeignKeyFromClaimsLocale)
       .then(removeForeignKeyFromPrompt)
       .then(removeForeignKeyFromResponseType)
