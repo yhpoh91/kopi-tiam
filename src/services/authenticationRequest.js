@@ -8,7 +8,10 @@ const mapAuthenticationRequestAcrValues = (authenticationRequest) => {
     return null;
   }
 
-  return authenticationRequest.acrValues.map(acrValue => acrValue.dataValues);
+  return authenticationRequest.acrValues
+    .map(acrValue => acrValue.dataValues)
+    .sort((a, b) => a.order - b.order)
+    .map(i => i.value);
 };
 
 const mapAuthenticationRequestClaimsLocales = (authenticationRequest) => {
@@ -16,7 +19,10 @@ const mapAuthenticationRequestClaimsLocales = (authenticationRequest) => {
     return null;
   }
 
-  return authenticationRequest.claimsLocales.map(claimsLocale => claimsLocale.dataValues);
+  return authenticationRequest.claimsLocales
+    .map(claimsLocale => claimsLocale.dataValues)
+    .sort((a, b) => a.order - b.order)
+    .map(i => i.value);
 };
 
 const mapAuthenticationRequestPrompts = (authenticationRequest) => {
@@ -24,7 +30,10 @@ const mapAuthenticationRequestPrompts = (authenticationRequest) => {
     return null;
   }
 
-  return authenticationRequest.prompts.map(prompt => prompt.dataValues);
+  return authenticationRequest.prompts
+    .map(prompt => prompt.dataValues)
+    .sort((a, b) => a.order - b.order)
+    .map(i => i.value);
 };
 
 const mapAuthenticationRequestResponseTypes = (authenticationRequest) => {
@@ -32,7 +41,10 @@ const mapAuthenticationRequestResponseTypes = (authenticationRequest) => {
     return null;
   }
 
-  return authenticationRequest.responseTypes.map(responseType => responseType.dataValues);
+  return authenticationRequest.responseTypes
+    .map(responseType => responseType.dataValues)
+    .sort((a, b) => a.order - b.order)
+    .map(i => i.value);
 };
 
 const mapAuthenticationRequestScopes = (authenticationRequest) => {
@@ -40,7 +52,10 @@ const mapAuthenticationRequestScopes = (authenticationRequest) => {
     return null;
   }
 
-  return authenticationRequest.scopes.map(scope => scope.dataValues);
+  return authenticationRequest.scopes
+    .map(scope => scope.dataValues)
+    .sort((a, b) => a.order - b.order)
+    .map(i => i.value);
 };
 
 const mapAuthenticationRequestUiLocales = (authenticationRequest) => {
@@ -48,7 +63,10 @@ const mapAuthenticationRequestUiLocales = (authenticationRequest) => {
     return null;
   }
 
-  return authenticationRequest.uiLocales.map(uiLocale => uiLocale.dataValues);
+  return authenticationRequest.uiLocales
+    .map(uiLocale => uiLocale.dataValues)
+    .sort((a, b) => a.order - b.order)
+    .map(i => i.value);
 };
 
 const mapAuthenticationRequest = (authenticationRequest) => {

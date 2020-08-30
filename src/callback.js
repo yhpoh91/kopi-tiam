@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { v4 as uuid } from 'uuid';
 
 import databaseService from './services/database';
+import userService from './services/user';
 import authenticationRequestService from './services/authenticationRequest';
 
 
@@ -36,156 +37,8 @@ const onGetUserInfo = async (sub, scope) => {
     LocalUser, Profile,
     Email, PhoneNumber, Address,
   } = databaseService;
-  const query = {
-    where: { id: sub, deleted: false },
-    include: [
-      {
-        model: Profile,
-        as: 'profile',
-        foreignKey: 'profileId',
-        where: {
-          deleted: false,
-        },
-        required: true,
-        include: [
-          {
-            model: Email,
-            as: 'emails',
-            foreignKey: 'profileId',
-            where: {
-              deleted: false,
-            },
-            required: false,
-          },
-          {
-            model: PhoneNumber,
-            as: 'phoneNumbers',
-            foreignKey: 'profileId',
-            where: {
-              deleted: false,
-            },
-            required: false,
-          },
-          {
-            model: Address,
-            as: 'addresses',
-            foreignKey: 'profileId',
-            where: {
-              deleted: false,
-            },
-            required: false,
-          },
-        ],
-      },
-    ],
-  };
 
-  // Load from Database
-  const localUser = await LocalUser.findOne(query);
-  if (localUser == null) {
-    return Promise.resolve(null);
-  }
-  const mappedLocalUser = localUser.dataValues;
-  const user = { sub };
-
-  // Profile
-  if (scope.includes('profile') && mappedLocalUser.profile) {
-    const { profile } = mappedLocalUser;
-    const mappedProfile = profile.dataValues;
-
-    user.name = `${mappedProfile.givenName} ${mappedProfile.familyName}`;
-    user.family_name = mappedProfile.familyName;
-    user.given_name = mappedProfile.givenName;
-    user.middle_name = mappedProfile.middleName;
-    user.nickname = mappedProfile.nickname;
-    user.preferred_username = mappedProfile.preferredUsername;
-    user.profile = mappedProfile.profile;
-    user.picture = mappedProfile.picture;
-    user.website = mappedProfile.website;
-    user.gender = mappedProfile.gender;
-    user.birthdate = mappedProfile.birthdate;
-    user.zoneinfo = mappedProfile.zoneInfo;
-    user.nationality = mappedProfile.nationality;
-    user.updated_at = mappedProfile.updatedAt;
-  }
-
-  // Email
-  if (scope.includes('email') && mappedLocalUser.profile && mappedLocalUser.profile.dataValues.emails) {
-    const { emails } = mappedLocalUser.profile.dataValues;
-    user.emails = [];
-
-    for (let i = 0; i < emails.length; i += 1) {
-      const email = emails[i].dataValues;
-
-      const mappedEmail = {
-        id: email.id,
-        name: email.name,
-        type: email.emailType,
-        email: email.email,
-        verified: email.verified,
-        preferred: email.preferred,
-      };
-
-      emails.push(mappedEmail);
-      if (i === 0 || (email.preferred && user.email == null)) {
-        user.email = email.email;
-        user.email_verified = email.verified;
-      }
-    }
-  }
-
-  // Phone
-  if (scope.includes('phone') && mappedLocalUser.profile && mappedLocalUser.profile.dataValues.phoneNumbers) {
-    const { phoneNumbers } = mappedLocalUser.profile.dataValues;
-    user.phone_numbers = [];
-
-    for (let i = 0; i < phoneNumbers.length; i += 1) {
-      const phoneNumber = phoneNumbers[i].dataValues;
-
-      const mappedPhoneNumber = {
-        id: phoneNumber.id,
-        name: phoneNumber.name,
-        type: phoneNumber.phoneNumberType,
-        phone_number: phoneNumber.phoneNumber,
-        verified: phoneNumber.verified,
-        preferred: phoneNumber.preferred,
-      };
-
-      phone_numbers.push(mappedPhoneNumber);
-      if (i === 0 || (phoneNumber.preferred && user.phone_number == null)) {
-        user.phone_number = phoneNumber.phoneNumber;
-        user.phone_number_verified = phoneNumber.verified;
-      }
-    }
-  }
-
-  // Address
-  if (scope.includes('address') && mappedLocalUser.profile && mappedLocalUser.profile.dataValues.addresses) {
-    const { addresses } = mappedLocalUser.profile.dataValues;
-    user.addresses = [];
-
-    for (let i = 0; i < addresses.length; i += 1) {
-      const address = addresses[i].dataValues;
-      
-      const mappedAddress = {
-        id: address.id,
-        formatted: `${address.streetAddress}, ${address.locality}, ${addres.region}, ${address.postalCode}, ${address.country}`,
-        street_address: address.streetAddress,
-        locality: address.locality,
-        region: address.region,
-        postal_code: address.postalCode,
-        country: address.country,
-        verified: address.verified,
-        preferred: address.preferred,
-      }
-
-      user.addresses.push(mappedAddress);
-      if (i === 0 || (address.preferred && user.address == null)) {
-        user.address = mappedAddress;
-      }
-    }
-  }
-
+  const user = await userService.loadUser(sub, scope);
   return Promise.resolve(user);
 };
 
