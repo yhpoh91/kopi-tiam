@@ -9,6 +9,7 @@ module.exports = {
       code: {
         type: Sequelize.STRING(1000),
         allowNull: false,
+        unique: true,
       },
       authorizationRequestId: {
         type: Sequelize.STRING(45),

@@ -4,9 +4,11 @@ import { v4 as uuid } from 'uuid';
 import databaseService from './services/database';
 import userService from './services/user';
 import authenticationRequestService from './services/authenticationRequest';
+import authorizationRequestService from './services/authorizationRequest';
+import authorizationService from './services/authorization';
 
 
-const AUTHORIZATION_CODE_LENGTH = 256;
+const authorizationCodeLength = parseInt(process.env.AUTHORIZATION_CODE_LENGTH || '256', 10);
 
 const authenticationRequests = {};
 const authorizationRequests = {};
@@ -14,7 +16,7 @@ const authorizationCodes = {};
 const consents = {};
 
 const generateCode = () => {
-  const byteLength = Math.floor(AUTHORIZATION_CODE_LENGTH / 2); // 1 byte will have 2 hex length
+  const byteLength = Math.floor(authorizationCodeLength / 2); // 1 byte will have 2 hex length
   const bytes = crypto.randomBytes(byteLength);
   const hex = bytes.toString('hex');
   return hex;
@@ -100,47 +102,45 @@ const onLoadAuthenticationRequest = async (authenticationRequestId) => {
 };
 
 const onSaveAuthorizationRequest = async (authenticationRequestId, sub) => {
-  const authorizationRequestId = uuid();
-  authorizationRequests[authorizationRequestId] = {
-    authenticationRequestId,
-    sub,
-  };
+  const authorizationRequestId = await authorizationRequestService.saveAuthorizationRequest(authenticationRequestId, sub);
   return Promise.resolve(authorizationRequestId);
 };
 
 const onLoadAuthorizationRequest = async (authorizationRequestId) => {
-  return Promise.resolve(authorizationRequests[authorizationRequestId]);
+  const authorizationRequest = await authorizationRequestService.loadAuthorizationRequest(authorizationRequestId);
+  return Promise.resolve(authorizationRequest);
 };
 
 const onSaveAuthorization = async (authorizationRequestId) => {
-  // Clash avoiding
-  let code = generateCode();
-  while (authorizationCodes[code] != null) {
-    code = generateCode();
-  }
+  const maxAttempts = 10;
+  let attempts = 0;
+  let saved = false;
 
-  // Save to Map
-  authorizationCodes[code] = authorizationRequestId;
+  let code;
+  while (!saved) {
+    try {
+      code = generateCode();
+      await authorizationService.saveAuthorization(authorizationRequestId, code);
+      saved = true;
+    } catch (error) {
+      if (attempts < maxAttempts) {
+        console.error(error.message);
+        saved = false;
+      }
+      return Promise.reject(error);
+    }
+  }
   return code;
 };
 
 const onLoadAuthorization = async (code) => {
-  return Promise.resolve(authorizationCodes[code]);
+  const authorization = await authorizationService.loadAuthorization(code);
+  return Promise.resolve(authorization);
 };
 
 const onRevokeAuthorization = async (code) => {
-  // Check if exists before delete
-  let existed = true;
-  const data = authorizationCodes[code];
-  if (data == null) {
-    existed = false;
-  }
-
-  // Delete saved data
-  delete authorizationCodes[code];
-
-  // Return whether deleted (if previously doesn't exist, return false as no deletion happened)
-  return Promise.resolve(existed);
+  await authorizationService.revokeAuthorization(code);
+  return Promise.resolve(true);
 };
 
 export default {

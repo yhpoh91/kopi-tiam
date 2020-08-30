@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     code: {
       type: DataTypes.STRING(1000),
       allowNull: false,
+      unique: true,
     },
     authorizationRequestId: {
       type: DataTypes.STRING(45),
