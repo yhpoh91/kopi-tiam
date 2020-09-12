@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 
 import databaseService from './services/database';
 import userService from './services/user';
+import authorizationConsentService from './services/authorizationConsent';
 import authenticationRequestService from './services/authenticationRequest';
 import authorizationRequestService from './services/authorizationRequest';
 import authorizationService from './services/authorization';
@@ -35,112 +36,115 @@ const onGetClient = async (clientId) => {
 };
 
 const onGetUserInfo = async (sub, scope) => {
-  const {
-    LocalUser, Profile,
-    Email, PhoneNumber, Address,
-  } = databaseService;
+  try { 
+    const {
+      LocalUser, Profile,
+      Email, PhoneNumber, Address,
+    } = databaseService;
 
-  const user = await userService.loadUser(sub, scope);
-  return Promise.resolve(user);
+    const user = await userService.loadUser(sub, scope);
+    return Promise.resolve(user);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 const onIsConsentGiven = async (sub, scope, clientId) => {
-  // Check if client belongs in given consents
-  const clientConsents = consents[clientId];
-  if (clientConsents == null) {
-    return Promise.resolve(false);
+  try {
+    const isConsentGiven = authorizationConsentService.isUserConsentGiven(clientId, sub, scope);
+    return Promise.resolve(isConsentGiven);
+  } catch (error) {
+    return Promise.reject(error);
   }
-
-  // Check Each of the Scopes
-  for (let i = 0; i < scope.length; i += 1) {
-    const scopeItem = scope[i];
-
-    // Check if scope belongs in client
-    const scopeConsents = clientConsents[scopeItem];
-    if (scopeConsents == null) {
-      return Promise.resolve(false);
-    }
-
-    // Check if user exists within scope consent
-    const subConsent = scopeConsents[sub];
-    if (subConsent == null) {
-      return Promise.resolve(false);
-    }
-  }
-
-  // No red flags, consent exists
-  return Promise.resolve(true);
 };
 
 const onSetConsentGiven = async (sub, scope, clientId) => {
-  if (consents[clientId] == null) {
-    consents[clientId] = {};
+  try {
+    await authorizationConsentService.setUserConsentGiven(clientId, sub, scope);
+    return Promise.resolve();
+  } catch (error) {
+    return Promise.reject(error);
   }
-  const clientConsents = consents[clientId];
-
-  for (let i = 0; i < scope.length; i += 1) {
-    const scopeItem = scope[i];
-
-    if (clientConsents[scopeItem] == null) {
-      clientConsents[scopeItem] = {};
-    }
-    const scopeConsents = clientConsents[scopeItem];
-    scopeConsents[sub] = true;
-  }
-
-  return Promise.resolve();
 };
 
 const onSaveAuthenticationRequest = async (authenticationRequest) => {
-  const authenticationRequestId = await authenticationRequestService.saveAuthenticationRequest(authenticationRequest);
-  return Promise.resolve(authenticationRequestId);
+  try {
+    const authenticationRequestId = await authenticationRequestService.saveAuthenticationRequest(authenticationRequest);
+    return Promise.resolve(authenticationRequestId);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 const onLoadAuthenticationRequest = async (authenticationRequestId) => {
-  const authenticationRequest = await authenticationRequestService.loadAuthenticationRequest(authenticationRequestId);
-  return Promise.resolve(authenticationRequest);
+  try {
+    const authenticationRequest = await authenticationRequestService.loadAuthenticationRequest(authenticationRequestId);
+    return Promise.resolve(authenticationRequest);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 const onSaveAuthorizationRequest = async (authenticationRequestId, sub) => {
-  const authorizationRequestId = await authorizationRequestService.saveAuthorizationRequest(authenticationRequestId, sub);
-  return Promise.resolve(authorizationRequestId);
+  try {
+    const authorizationRequestId = await authorizationRequestService.saveAuthorizationRequest(authenticationRequestId, sub);
+    return Promise.resolve(authorizationRequestId);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 const onLoadAuthorizationRequest = async (authorizationRequestId) => {
-  const authorizationRequest = await authorizationRequestService.loadAuthorizationRequest(authorizationRequestId);
-  return Promise.resolve(authorizationRequest);
+  try {
+    const authorizationRequest = await authorizationRequestService.loadAuthorizationRequest(authorizationRequestId);
+    return Promise.resolve(authorizationRequest);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 const onSaveAuthorization = async (authorizationRequestId) => {
-  const maxAttempts = 10;
-  let attempts = 0;
-  let saved = false;
+  try {
+    const maxAttempts = 10;
+    let attempts = 0;
+    let saved = false;
 
-  let code;
-  while (!saved) {
-    try {
-      code = generateCode();
-      await authorizationService.saveAuthorization(authorizationRequestId, code);
-      saved = true;
-    } catch (error) {
-      if (attempts < maxAttempts) {
-        console.error(error.message);
-        saved = false;
+    let code;
+    while (!saved) {
+      try {
+        code = generateCode();
+        await authorizationService.saveAuthorization(authorizationRequestId, code);
+        saved = true;
+      } catch (error) {
+        if (attempts < maxAttempts) {
+          console.error(error.message);
+          saved = false;
+        }
+        return Promise.reject(error);
       }
-      return Promise.reject(error);
     }
+    return Promise.resolve(code);
+  } catch (error) {
+    return Promise.reject(error);
   }
-  return code;
 };
 
 const onLoadAuthorization = async (code) => {
-  const authorization = await authorizationService.loadAuthorization(code);
-  return Promise.resolve(authorization);
+  try {
+    const authorization = await authorizationService.loadAuthorization(code);
+    return Promise.resolve(authorization);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 const onRevokeAuthorization = async (code) => {
-  await authorizationService.revokeAuthorization(code);
-  return Promise.resolve(true);
+  try {
+    await authorizationService.revokeAuthorization(code);
+    return Promise.resolve(true);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 export default {
