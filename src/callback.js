@@ -8,7 +8,7 @@ import authenticationRequestService from './services/authenticationRequest';
 import authorizationRequestService from './services/authorizationRequest';
 import authorizationService from './services/authorization';
 
-
+const defaultRedirectHost = process.env.DEFAULT_REDIRECT_HOST || 'http://localhost:8080';
 const authorizationCodeLength = parseInt(process.env.AUTHORIZATION_CODE_LENGTH || '256', 10);
 
 const authenticationRequests = {};
@@ -29,7 +29,7 @@ const onGetClient = async (clientId) => {
       name: 'Example Client',
       id: 'cid',
       secret: 'cs',
-      redirectUri: ['http://localhost:8080/callback.html'],
+      redirectUri: [`${defaultRedirectHost}/callback.html`],
     });
   }
   return Promise.resolve(null);
