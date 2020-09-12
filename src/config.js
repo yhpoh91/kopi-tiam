@@ -1,7 +1,7 @@
 import callbacks from './callback';
 
 const config = {
-  host: process.env.HOST || 'http://localhost:8080',
+  host: process.env.KOPI_ID_HOST || 'http://localhost:8080',
   logLevel: process.env.LOG_LEVEL || 'info',
   showResponseStack: (process.env.SHOW_RESPONSE_STACK || 'false') === 'true',
 
