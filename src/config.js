@@ -5,8 +5,8 @@ const config = {
   logLevel: process.env.LOG_LEVEL || 'info',
   showResponseStack: (process.env.SHOW_RESPONSE_STACK || 'false') === 'true',
 
-  loginPage: 'login.html',
-  consentPage: 'consent.html',
+  loginUrl: process.env.LOGIN_URL || 'http://localhost:8080/login.html',
+  consentPage: process.env.CONSENT_URL || 'http://localhost:8080/consent.html',
 
   jwtAlgorithm: process.env.KID_JWT_ALGORITHM || 'HS512',
   hashAlgorithm: process.env.KID_HASH_ALGORITHM || 'sha512',
