@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { v4 as uuid } from 'uuid';
 
 import databaseService from './services/database';
+import clientService from './services/client';
 import userService from './services/user';
 import authorizationConsentService from './services/authorizationConsent';
 import authenticationRequestService from './services/authenticationRequest';
@@ -24,24 +25,16 @@ const generateCode = () => {
 };
 
 const onGetClient = async (clientId) => {
-  if (clientId === 'cid') {
-    return Promise.resolve({
-      name: 'Example Client',
-      id: 'cid',
-      secret: 'cs',
-      redirectUri: [`${defaultRedirectHost}/callback.html`],
-    });
+  try {
+    const client = await clientService.getClient(clientId);
+    return Promise.resolve(client);
+  } catch (error) {
+    return Promise.reject(error);
   }
-  return Promise.resolve(null);
 };
 
 const onGetUserInfo = async (sub, scope) => {
-  try { 
-    const {
-      LocalUser, Profile,
-      Email, PhoneNumber, Address,
-    } = databaseService;
-
+  try {
     const user = await userService.loadUser(sub, scope);
     return Promise.resolve(user);
   } catch (error) {
