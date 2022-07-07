@@ -48,7 +48,7 @@
     "jsonwebtoken": "^8.5.1",
     "kopi-id": "^1.0.3",
     "log4js": "^6.3.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.19.2",
